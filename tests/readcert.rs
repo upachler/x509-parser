@@ -9,6 +9,7 @@ use x509_parser::objects::{nid2obj, Nid};
 
 static IGCA_DER: &'static [u8] = include_bytes!("../assets/IGC_A.der");
 static NO_EXTENSIONS_DER: &'static [u8] = include_bytes!("../assets/no_extensions.der");
+static V1_NO_EXTENSIONS_DER: &'static [u8] = include_bytes!("../assets/v1cert.der");
 
 #[test]
 fn test_x509_parser() {
@@ -89,6 +90,22 @@ fn test_x509_parser_no_extensions() {
             assert_eq!(tbs_cert.extensions.len(), 0);
         }
         _ => panic!("x509 parsing failed: {:?}", res),
+    }
+}
+
+//#[test]
+fn test_x509_parser_v1_no_extensions() {
+    let empty = &b""[..];
+    let res = parse_x509_der(V1_NO_EXTENSIONS_DER);
+    match res {
+        Ok((e, cert)) => {
+            assert_eq!(e, empty);
+
+            let tbs_cert = cert.tbs_certificate;
+            assert_eq!(tbs_cert.version, 0);
+            assert_eq!(tbs_cert.extensions.len(), 0);
+        }
+        _ => panic!("x509 v1 parsing failed: {:?}", res),
     }
 }
 
